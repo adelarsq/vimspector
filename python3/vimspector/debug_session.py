@@ -714,7 +714,7 @@ class DebugSession( object ):
     self._stackTraceView.Clear()
     self._variablesView.Clear()
 
-  def OnServerExit( self, status ):
+  def OnServerExit( self ):
     self.Clear()
 
     self._connection.Reset()

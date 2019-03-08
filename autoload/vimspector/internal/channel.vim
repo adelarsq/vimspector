@@ -25,17 +25,10 @@ _vimspector_session.OnChannelData( vim.eval( 'a:data' ) )
 EOF
 endfunction
 
-function! s:_OnServerError( channel, data ) abort
-  echom "Channel received error: " . a:data
-endfunction
-
-function! s:_OnExit( channel, status ) abort
-  echom "Channel exit with status " . a:status
-endfunction
-
 function! s:_OnClose( channel ) abort
   echom "Channel closed"
-  " py3 _vimspector_session.OnChannelClosed()
+  unlet s:ch
+  py3 _vimspector_session.OnServerExit()
 endfunction
 
 function! s:_Send( msg ) abort
@@ -76,14 +69,19 @@ endfunction
 
 function! vimspector#internal#channel#StopDebugSession() abort
   if !exists( 's:ch' )
+    echom "No closing channel, it wasn't  started"
+    py3 _vimspector_session.OnServerExit()
     return
   endif
 
   if ch_status( s:ch ) == 'open'
+    echom "Closing channel"
     call ch_close( s:ch )
+    " the channel callback is not called! :help ch_close
+    call s:_OnClose( s:ch )
+  else
+    echom "Chennel isn't open. Server is ended. Waiting for callback"
   endif
-
-  unlet s:ch
 endfunction
 
 function! vimspector#internal#channel#Reset() abort
