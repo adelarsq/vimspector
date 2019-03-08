@@ -491,11 +491,12 @@ class DebugSession( object ):
         self._logger.debug( 'Running remote app: %s', cmd )
         self._outputView.RunJobWithOutput( 'Remote', cmd )
     else:
+      if atttach_config.get( 'pidSelect', 'none' ) == 'none':
+        return
+
       if atttach_config[ 'pidSelect' ] == 'ask':
         pid = utils.AskForInput( 'Enter PID to attach to: ' )
         launch_config[ atttach_config[ 'pidProperty' ] ] = pid
-        return
-      elif atttach_config[ 'pidSelect' ] == 'none':
         return
 
       raise ValueError( 'Unrecognised pidSelect {0}'.format(
